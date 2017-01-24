@@ -73,32 +73,11 @@ public class AppDB {
             conn.setAutoCommit(false);
             //Create query statement to the DB to check against tables 
             qrFacDB=conn.createStatement();
-//            rsFacDB = metadata.getTables(null, "APP", "BASICDETAIL", null);
             conn.commit();
         }catch(SQLException se){
             System.out.println("SQL error for main catch:"+se);
         }
     }
-//    public void setFacDet(String fName, String lName, String oNum,int oExt,String eAdd){
-//        try{
-//            frName=fName;
-//            lsName=lName;
-//            ofNum=oNum;
-//            mail=eAdd;
-//            ofExt=oExt;
-//            insFacDB=conn.prepareStatement("insert into APP.BASICDETAIL values (?,?,?,?,?)");
-//            insFacDB.setString(1,frName);
-//            insFacDB.setString(2,lsName);
-//            insFacDB.setString(3,ofNum);
-//            insFacDB.setInt(4,ofExt);
-//            insFacDB.setString(3,mail);
-//            insFacDB.executeUpdate();
-//            conn.commit();
-//        }
-//        catch(SQLException se){
-//            System.out.println("SQL error for setFacDet catch:"+se);
-//        }
-//    }
     public void addFacDet(String fName, String lName, String oNum,String eAdd){
         try{
             frName=fName;
@@ -129,7 +108,7 @@ public class AppDB {
                         && ("XJ015".equals(see.getSQLState()) ))) {
                     // we got the expected exception
                     System.out.println("Derby shutdown normal");
-                    // Note that for single database shutdown, the expected
+                    // For single database shutdown, the expected
                     // SQL state is "08006", and the error code is 45000.
                 } else {
                     // if the error code or SQLState is different, we have
@@ -190,32 +169,6 @@ public class AppDB {
             conn.commit();
         } catch (SQLException ex) {
             Logger.getLogger(AppDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    public void printContent(String t2P){
-        try{
-        tableName=t2P.toUpperCase();
-        if(tableName.equals("BASICDETAIL")){
-            printStatement=String.format("select * from APP.%s order by FIRSTNAME asc",tableName);
-            rsFacDB=qrFacDB.executeQuery(printStatement);
-            System.out.println("First Name, Last Name, Office Number, Office Ext, Email");
-            while(rsFacDB.next()){
-                System.out.printf("%s %s located in %s x-%s @%s%n",rsFacDB.getString(1),rsFacDB.getString(2),rsFacDB.getString(3),rsFacDB.getInt(4),rsFacDB.getString(5));
-            }
-            System.out.println();
-        }
-        if(tableName.equals("COURSES")){
-            printStatement=String.format("select * from APP.%s order by COURSE asc",tableName);
-            rsFacDB=qrFacDB.executeQuery(printStatement);
-            System.out.println("Course, Days, Start time, End time, Instructor name");
-            while(rsFacDB.next()){
-                System.out.printf("%s on %s %s to %s by %s %s%n",rsFacDB.getString(1),rsFacDB.getString(4),rsFacDB.getTime(5),rsFacDB.getTime(6),rsFacDB.getString(2),rsFacDB.getString(3));
-            }
-            System.out.println();
-        }
-        // Add additional cases
-        }catch(SQLException se){
-            System.out.println("SQL error for printContent catch:"+se);
         }
     }
     public List<String> getFacultyList(){
@@ -284,7 +237,7 @@ public class AppDB {
     }
     public void availOffice(){
         // Set office as current location only if current time is between working hours
-        if(isWorkingHours()){//(MainFrame.topContent.hour24>=8 & MainFrame.topContent.min>=0) & MainFrame.topContent.hour24<17
+        if(isWorkingHours()){
             // create current loc display string and pass to FacultyDetails
             curStatus="<html>Faculty currently available in office";
         }else{
@@ -305,8 +258,8 @@ public class AppDB {
     }
     public int beforeCurrentTime(Calendar d1){
         // Compares if current system time is past d1
-        long     t1;
-        long     currTime;
+        long t1;
+        long currTime;
         t1 = d1.get(Calendar.HOUR_OF_DAY)*60*60+d1.get(Calendar.MINUTE)*60;
         currTime=MainFrame.topContent.hour24*60*60+MainFrame.topContent.min*60;
         long diff = t1-currTime;
@@ -316,51 +269,42 @@ public class AppDB {
     }
     public void inProg(){
         try{
-//            System.out.println("Inside inProg");
             sT1=Calendar.getInstance();
             eT1=Calendar.getInstance();
-//            System.out.println("Created t1 calendar instances");
-//            System.out.println("Checking rsFacDB");    
             if(rsFacDB.next()){
-//                    if(i==0){
-                        // Identify if first class in the list is in progress
-//                        System.out.println("Setting time...");
-                        sT1.setTime(rsFacDB.getTime("STARTTIME"));
-                        eT1.setTime(rsFacDB.getTime("ENDTIME"));
-//                        System.out.println("t1 time set");
-                        //compare current time with st and et of first result
-                        if(beforeCurrentTime(sT1)==1 & beforeCurrentTime(eT1)==0){//(sT1.get(Calendar.HOUR_OF_DAY) <= MainFrame.topContent.hour24 & MainFrame.topContent.hour24 <= eT1.get(Calendar.HOUR_OF_DAY)) & (sT1.get(Calendar.MINUTE) <= MainFrame.topContent.min & MainFrame.topContent.min <= eT1.get(Calendar.MINUTE))
-                            // if current time between st and et set current status and check next result
-                            // create current loc display string and pass to FacultyDetails
-//                            System.out.println("Setting curStatus string..");
-                            curStatus=String.format("<html>Faculty Location Details :<p>Currently teaching %s in %s until %02d:%02d HRS</p><p>", rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
-//                            System.out.println("curStatus set, now setting string in facDetails");
-//                            System.out.println("String set");
-                            if(rsFacDB.next()){
-                                // If more classes in the list set the next one as future location only if there is less than 30 mins between them
-                                sT2=Calendar.getInstance();
-                                eT2=Calendar.getInstance();
-                                // Get diff between et and st of 1st and second result
-                                sT2.setTime(rsFacDB.getTime("STARTTIME"));
-                                eT2.setTime(rsFacDB.getTime("ENDTIME"));
-                                // if diff > 30 min then set future status as office
-                                if(abs(eT1.get(Calendar.MINUTE)-sT2.get(Calendar.MINUTE))>30){
-                                    // set future status to office
-                                    futStatus=String.format("Faculty will be available next in the office after %02d:%02d HRS until %02d:%02d HRS</p></html>",eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE),sT2.get(Calendar.HOUR_OF_DAY),sT2.get(Calendar.MINUTE));
-                                }else{
-                                    // set future status to 2nd result
-                                    futStatus=String.format("Faculty will be teaching %s in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT2.get(Calendar.HOUR_OF_DAY),sT2.get(Calendar.MINUTE),eT2.get(Calendar.HOUR_OF_DAY),eT2.get(Calendar.MINUTE));
-                                }
-                            }else{
-                                // set future status to office
-                                futStatus="Faculty will be available next in the office until 17:00 HRS</p></html>";
-                            }
+                // Identify if first class in the list is in progress
+                sT1.setTime(rsFacDB.getTime("STARTTIME"));
+                eT1.setTime(rsFacDB.getTime("ENDTIME"));
+                //compare current time with st and et of first result
+                if(beforeCurrentTime(sT1)==1 & beforeCurrentTime(eT1)==0){
+                    // if current time between st and et set current status and check next result
+                    // create current loc display string and pass to FacultyDetails
+                    curStatus=String.format("<html>Faculty Location Details :<p>Currently teaching %s in %s until %02d:%02d HRS</p><p>", rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
+                    if(rsFacDB.next()){
+                        // If more classes in the list set the next one as future location only if there is less than 30 mins between them
+                        sT2=Calendar.getInstance();
+                        eT2=Calendar.getInstance();
+                        // Get diff between et and st of 1st and second result
+                        sT2.setTime(rsFacDB.getTime("STARTTIME"));
+                        eT2.setTime(rsFacDB.getTime("ENDTIME"));
+                        // if diff > 30 min then set future status as office
+                        if(abs(eT1.get(Calendar.MINUTE)-sT2.get(Calendar.MINUTE))>30){
+                            // set future status to office
+                            futStatus=String.format("Faculty will be available next in the office after %02d:%02d HRS until %02d:%02d HRS</p></html>",eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE),sT2.get(Calendar.HOUR_OF_DAY),sT2.get(Calendar.MINUTE));
                         }else{
-                            // else set first entry as future status and current status as office
-                            availOffice();
-                            futStatus=String.format("<p>Faculty will be later on teaching %s in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT1.get(Calendar.HOUR_OF_DAY),sT1.get(Calendar.MINUTE),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
+                            // set future status to 2nd result
+                            futStatus=String.format("Faculty will be teaching %s in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT2.get(Calendar.HOUR_OF_DAY),sT2.get(Calendar.MINUTE),eT2.get(Calendar.HOUR_OF_DAY),eT2.get(Calendar.MINUTE));
                         }
+                    }else{
+                        // set future status to office
+                        futStatus="Faculty will be available next in the office until 17:00 HRS</p></html>";
+                    }
+                }else{
+                    // else set first entry as future status and current status as office
+                    availOffice();
+                    futStatus=String.format("<p>Faculty will be later on teaching %s in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT1.get(Calendar.HOUR_OF_DAY),sT1.get(Calendar.MINUTE),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
                 }
+            }
         }catch(SQLException se){
                 System.out.println("SQL error for inProg catch:"+se);
         }
@@ -386,10 +330,4 @@ public class AppDB {
             dayOfWeek="NA";
         }
     }
-//    public static void main(String[] args){
-//        AppDB testDB=new AppDB();
-////        testDB.printContent("BASICDETAIL");
-////        testDB.printContent("COURSES");
-//        testDB.shutDB();
-//    }
 }
