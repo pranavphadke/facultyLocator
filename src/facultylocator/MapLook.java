@@ -25,10 +25,10 @@ import javax.swing.JPanel;
  *
  * @author Pranav Phadke
  */
-public class MapView extends JPanel {
+public class MapLook extends JPanel {
     String xCoord,yCoord;
     static String[] facName;
-    public MapView(String xCoord,String yCoord) {
+    public MapLook(String xCoord,String yCoord) {
         this.xCoord=xCoord;
         this.yCoord=yCoord;
         facName=MainFrame.middleContent.facInfo.getFacName();
@@ -41,7 +41,7 @@ public class MapView extends JPanel {
         add(tempLabel,BorderLayout.CENTER);
         //
     }
-    public MapView(){//FacultySelector overview
+    public MapLook(){//FacultySelector overview
 //        Get all coords in DB
         setBackground(Color.GRAY);
         setLayout(new BorderLayout());

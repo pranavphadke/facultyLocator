@@ -40,7 +40,7 @@ public class FacultySelector extends JPanel implements ActionListener,MouseListe
     public static String facultyName;
     private static CardLayout clUsageFacSel;
 //    private static int i;
-    MapView mapView;
+    MapLook mapLook;
     DefaultListCellRenderer dlcr = new DefaultListCellRenderer(); 
 //    public static void setFacultyList(){
 //
@@ -82,11 +82,11 @@ public class FacultySelector extends JPanel implements ActionListener,MouseListe
         facultySelectorBox.setSelectedIndex(0);
         facultySelectorBox.addActionListener(this);
         // add MapView class object and get all faculty coords
-        mapView=new MapView();
-        mapView.addMouseListener(this);
+        mapLook=new MapLook();
+        mapLook.addMouseListener(this);
         add(facultySelectorBox);
         add(Box.createRigidArea(new Dimension(0,5)));
-        add(mapView);
+        add(mapLook);
     }
 
     @Override

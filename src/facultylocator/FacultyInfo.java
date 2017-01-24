@@ -37,21 +37,13 @@ class FacultyInfo extends JPanel {
         setLayout(facInLay2);
         // Check against DB and get current loc
         facultyDetails=new FacultyDetails();
-        MapView mapView=new MapView(this.name,this.name);
+        // Get xcoord and ycoord and pass it to MapLook
+        MapLook mapLook=new MapLook(this.name,this.name);
 //        add(facultyDetails);
 //        add(mapView);
         add(facultyDetails,"width 310!,growy");
-        add(mapView,"push,grow");
+        add(mapLook,"push,grow");
     }
-//    public FacultyInfo(){//Default call
-//        setLayout(facInLay);
-//        this.name=MainFrame.middleContent.facInfo.getFacName();
-//        System.out.println("Name in facInfo "+this.name);
-//        facultyDetails=new FacultyDetails();
-//        MapView mapView=new MapView();
-//        add(facultyDetails);
-//        add(mapView);
-//    }
     public static void setFacName(String facName){
         names=facName.split(" ");
     }
