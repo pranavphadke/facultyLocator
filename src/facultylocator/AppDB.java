@@ -236,6 +236,10 @@ public class AppDB {
                 if(countFacCourse==0){
                     // No class for faculty today
                     availOffice();
+                    locDet[0]=offCoordString;
+                    locDet[1]=String.format("Faculty Office in %s",ofNum);
+                    locDet[2]=offCoordString;
+                    locDet[3]=String.format("Faculty Office in %s",ofNum);
                     futStatus="</html>";
                 }else{
 //                    System.out.println("Creating result query..");
@@ -344,6 +348,9 @@ public class AppDB {
     }
     public String getFutStatus(){
         return(futStatus);
+    }
+    public String[] getLocDet(){
+        return(locDet);
     }
     public void setDayCode(int day){
         if(day==2){

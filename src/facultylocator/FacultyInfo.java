@@ -26,7 +26,7 @@ import net.miginfocom.swing.MigLayout;
  */
 class FacultyInfo extends JPanel {
     static String name;
-    static String[] names;
+    static String[] names,locDetails;
 //    GridLayout facInLay=new GridLayout(1,2);
     MigLayout facInLay2 = new MigLayout();
     public static FacultyDetails facultyDetails;
@@ -37,12 +37,14 @@ class FacultyInfo extends JPanel {
         setLayout(facInLay2);
         // Check against DB and get current loc
         facultyDetails=new FacultyDetails();
+        locDetails=MainFrame.db.getLocDet();
         // Get xcoord and ycoord and pass it to MapLook
         MapLook mapLook=new MapLook(this.name,this.name);
+        MapLook mapLook2=new MapLook(locDetails);
 //        add(facultyDetails);
 //        add(mapView);
         add(facultyDetails,"width 310!,growy");
-        add(mapLook,"push,grow");
+        add(mapLook2,"push,grow");
     }
     public static void setFacName(String facName){
         names=facName.split(" ");
