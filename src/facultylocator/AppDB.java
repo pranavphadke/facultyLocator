@@ -41,13 +41,14 @@ public class AppDB {
     private String framework="embedded";
     static List<String> facNameList;
     List<String> facDet,facLoc;
+    static String[] locDet={"","","",""};
 //    public String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-    String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay;
+    String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null;
     int ofExt=9999,tableCheckFlag=0,countFacCourse=0;
     Statement qrFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
-    ResultSet rsFacDB=null,countFacLoc=null;
+    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null;
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
@@ -187,11 +188,23 @@ public class AppDB {
     public List<String> getFacDet(String frsName, String lstName){
         facDet=new ArrayList<>();
         try{
+            // get faculty details and find office coordinates
             rsFacDB=qrFacDB.executeQuery(String.format("select OFFNUM,OFFEXT,EMAIL from APP.BASICDETAIL where upper(FIRSTNAME)='%s' AND upper(LASTNAME)='%s'",frsName.toUpperCase(),lstName.toUpperCase()));
             while(rsFacDB.next()){
                 facDet.add(rsFacDB.getString("OFFNUM"));
                 facDet.add(rsFacDB.getString("OFFEXT"));// Use getString("COLUMNNAME")
                 facDet.add(rsFacDB.getString("EMAIL"));
+                ofNum=rsFacDB.getString("OFFNUM");
+            }
+            String[] offNumSplit=ofNum.split(" ");
+            try{
+                offCoord=qrFacDB.executeQuery(String.format("SELECT LOCATION.LAT,LOCATION.LON FROM APP.LOCATION WHERE LOCATION.BLDG = '%s'",offNumSplit[0]));
+                while(offCoord.next()){
+                    // set string with office coordinates (used in inProg)
+                    offCoordString=String.format("%s,%s",offCoord.getString("LAT"),offCoord.getString("LON"));
+                }
+            }catch(SQLException se){
+                System.out.println("SQL error for getFacDet->offCoord catch:"+se);
             }
         }catch(SQLException se){
             System.out.println("SQL error for getFacDet catch:"+se);
@@ -279,6 +292,8 @@ public class AppDB {
                 if(beforeCurrentTime(sT1)==1 & beforeCurrentTime(eT1)==0){
                     // if current time between st and et set current status and check next result
                     // create current loc display string and pass to FacultyDetails
+                    locDet[0]=String.format("%s,%s",rsFacDB.getString("LAT"),rsFacDB.getString("LON"));
+                    locDet[1]=rsFacDB.getString("COURSE");
                     curStatus=String.format("<html>Faculty Location Details :<p>Currently teaching %s in %s until %02d:%02d HRS</p><p>", rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
                     if(rsFacDB.next()){
                         // If more classes in the list set the next one as future location only if there is less than 30 mins between them
@@ -291,19 +306,34 @@ public class AppDB {
                         if(abs(eT1.get(Calendar.MINUTE)-sT2.get(Calendar.MINUTE))>30){
                             // set future status to office
                             futStatus=String.format("Faculty will be available next in the office after %02d:%02d HRS until %02d:%02d HRS</p></html>",eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE),sT2.get(Calendar.HOUR_OF_DAY),sT2.get(Calendar.MINUTE));
+                            // New query to find office location
+                            locDet[2]=offCoordString;
+                            locDet[3]=String.format("Faculty Office in %s",ofNum);
                         }else{
                             // set future status to 2nd result
                             futStatus=String.format("Faculty will be teaching %s in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT2.get(Calendar.HOUR_OF_DAY),sT2.get(Calendar.MINUTE),eT2.get(Calendar.HOUR_OF_DAY),eT2.get(Calendar.MINUTE));
+                            locDet[2]=String.format("%s,%s",rsFacDB.getString("LAT"),rsFacDB.getString("LON"));
+                            locDet[3]=rsFacDB.getString("COURSE");
                         }
                     }else{
                         // set future status to office
                         futStatus="Faculty will be available next in the office until 17:00 HRS</p></html>";
+                        locDet[2]=offCoordString;
+                        locDet[3]=String.format("Faculty Office in %s",ofNum);
                     }
                 }else{
                     // else set first entry as future status and current status as office
                     availOffice();
-                    futStatus=String.format("<p>Faculty will be later on teaching %s in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT1.get(Calendar.HOUR_OF_DAY),sT1.get(Calendar.MINUTE),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
+                    locDet[0]=offCoordString;
+                    locDet[1]=String.format("Faculty Office in %s",ofNum);
+                    futStatus=String.format("<p>Faculty will be teaching %s later on in %s from %02d:%02d HRS until %02d:%02d HRS</p></html>",rsFacDB.getString("COURSE"),rsFacDB.getString("ROOM"),sT1.get(Calendar.HOUR_OF_DAY),sT1.get(Calendar.MINUTE),eT1.get(Calendar.HOUR_OF_DAY),eT1.get(Calendar.MINUTE));
+                    locDet[2]=String.format("%s,%s",rsFacDB.getString("LAT"),rsFacDB.getString("LON"));
+                    locDet[3]=rsFacDB.getString("COURSE");
                 }
+                System.out.println(locDet[0]);
+                System.out.println(locDet[1]);
+                System.out.println(locDet[2]);
+                System.out.println(locDet[3]);
             }
         }catch(SQLException se){
                 System.out.println("SQL error for inProg catch:"+se);
