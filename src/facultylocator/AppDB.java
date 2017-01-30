@@ -52,6 +52,7 @@ public class AppDB {
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
+    static boolean onlyOffFlag=true;
     public AppDB(){
 //        System.out.println("Check for db mode...");
 //        if (arg.length>0) {
@@ -351,6 +352,16 @@ public class AppDB {
     }
     public String[] getLocDet(){
         return(locDet);
+    }
+    public void setOnlyOffice(boolean flag_1){
+        if (flag_1==true){
+            onlyOffFlag=true;
+        } else{
+            onlyOffFlag=false;
+        }
+    }
+    public boolean getOnlyOffice(){
+        return(onlyOffFlag);
     }
     public void setDayCode(int day){
         if(day==2){
