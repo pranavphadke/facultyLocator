@@ -26,7 +26,7 @@ import javax.swing.JPanel;
  * @author Pranav Phadke
  */
 public class MapLook extends JPanel {
-    String xCoord,yCoord,currCoord,currLocName,futCoord,futLocName;
+    String xCoord,yCoord,currCoord,currLocName,futCoord,futLocName,mapViewString;
     static String[] facName;
     public MapLook(String xCoord,String yCoord) {
         this.xCoord=xCoord;
@@ -43,15 +43,21 @@ public class MapLook extends JPanel {
     }
     public MapLook(String[] locDetails){
 //      For one faculty member
-        currCoord=locDetails[0];
-        currLocName=locDetails[1];
-        futCoord=locDetails[2];
-        futLocName=locDetails[3];
         facName=MainFrame.middleContent.facInfo.getFacName();
+        if(MainFrame.db.getOnlyOffice()){
+            currCoord=locDetails[0];
+            currLocName=locDetails[1];
+            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with final loc at "+currCoord+", "+currLocName+" </html>");
+        }else{
+            currCoord=locDetails[0];
+            currLocName=locDetails[1];
+            futCoord=locDetails[2];
+            futLocName=locDetails[3];
+            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with current loc at "+currCoord+", "+currLocName+" and next loc at "+futCoord+", "+futLocName+"</html>");
+        }
         setBackground(Color.GRAY);
         setLayout(new BorderLayout());
         // Temp label
-        String mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with current loc at "+currCoord+", "+currLocName+" and next loc at "+futCoord+", "+futLocName+"</html>");
         JLabel tempLabel=new JLabel(mapViewString);
         tempLabel.setHorizontalAlignment(JLabel.CENTER);
         add(tempLabel,BorderLayout.CENTER);
