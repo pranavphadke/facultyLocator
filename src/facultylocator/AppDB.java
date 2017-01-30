@@ -241,8 +241,10 @@ public class AppDB {
                     locDet[1]=String.format("Faculty Office in %s",ofNum);
                     locDet[2]=offCoordString;
                     locDet[3]=String.format("Faculty Office in %s",ofNum);
+                    setOnlyOffice(true);
                     futStatus="</html>";
                 }else{
+                    setOnlyOffice(false);
 //                    System.out.println("Creating result query..");
                     rsFacDB=qrFacDB.executeQuery(String.format("SELECT COURSES.COURSE,COURSES.ROOM,COURSES.STARTTIME,COURSES.ENDTIME,LOCATION.LAT,LOCATION.LON FROM APP.COURSES INNER JOIN APP.LOCATION ON COURSES.BLDG =LOCATION.BLDG WHERE DAYS LIKE '%s' AND upper(COURSES.INSTRUCTFIRSTNAME)='%s' AND upper(COURSES.INSTRUCTLASTNAME)='%s' AND COURSES.ENDTIME >= '%s' ORDER BY COURSES.ENDTIME asc",likeCond,frsName.toUpperCase(),lstName.toUpperCase(),hourCond));//COURSES.STARTTIME
 //                    System.out.println("Query created and passed");
