@@ -26,7 +26,7 @@ import javax.swing.JPanel;
  * @author Pranav Phadke
  */
 public class MapLook extends JPanel {
-    String xCoord,yCoord,currCoord,currLocName,futCoord,futLocName,mapViewString;
+    String xCoord,yCoord,currCoord,currLocName,futCoord,futLocName,mapViewString,imgLink,key;
     static String[] facName;
     public MapLook(String xCoord,String yCoord) {
         this.xCoord=xCoord;
@@ -44,20 +44,26 @@ public class MapLook extends JPanel {
     public MapLook(String[] locDetails){
 //      For one faculty member
         facName=MainFrame.middleContent.facInfo.getFacName();
+        key=MainFrame.db.getAPIKey();
         if(MainFrame.db.getOnlyOffice()){
+            // no classes for the rest of the day
             currCoord=locDetails[0];
             currLocName=locDetails[1];
-            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with final loc at "+currCoord+", "+currLocName+" </html>");
+//            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with final loc at "+currCoord+", "+currLocName+" </html>");
+            imgLink= "https://maps.googleapis.com/maps/api/staticmap?center="+currCoord+"&zoom=17&size=400x400&markers=color:red%7Clabel:C%7C"+currCoord+"&key="+key;
         }else{
+            // will also be at locations other than office
             currCoord=locDetails[0];
             currLocName=locDetails[1];
             futCoord=locDetails[2];
             futLocName=locDetails[3];
-            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with current loc at "+currCoord+", "+currLocName+" and next loc at "+futCoord+", "+futLocName+"</html>");
+//            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with current loc at "+currCoord+", "+currLocName+" and next loc at "+futCoord+", "+futLocName+"</html>");
+            imgLink = "https://maps.googleapis.com/maps/api/staticmap?center=27.526048,-97.881323&zoom=16&size=640x480&markers=color:red%7Clabel:C%7C"+currCoord+"&markers=color:blue%7Csize:mid%7Clabel:N%7C"+futCoord+"&key="+key;
         }
         setBackground(Color.GRAY);
         setLayout(new BorderLayout());
         // Temp label
+        mapViewString=new String("<html><img src="+imgLink+"></html>");
         JLabel tempLabel=new JLabel(mapViewString);
         tempLabel.setHorizontalAlignment(JLabel.CENTER);
         add(tempLabel,BorderLayout.CENTER);

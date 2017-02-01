@@ -43,12 +43,12 @@ public class AppDB {
     List<String> facDet,facLoc;
     static String[] locDet={"","","",""};
 //    public String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-    String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null;
+    String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null,key;
     int ofExt=9999,tableCheckFlag=0,countFacCourse=0;
     Statement qrFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
-    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null;
+    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null;
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
@@ -76,9 +76,18 @@ public class AppDB {
             //Create query statement to the DB to check against tables 
             qrFacDB=conn.createStatement();
             conn.commit();
+            apiKey=qrFacDB.executeQuery("SELECT APIKEY FROM APP.GMAPS");
+            apiKey.next();
+            setAPIKey(apiKey.getString("APIKEY"));
         }catch(SQLException se){
             System.out.println("SQL error for main catch:"+se);
         }
+    }
+    public void setAPIKey(String k){
+        key=k;
+    }
+    public String getAPIKey(){
+        return(key);
     }
     public void addFacDet(String fName, String lName, String oNum,String eAdd){
         try{
