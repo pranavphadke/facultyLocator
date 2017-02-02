@@ -346,10 +346,10 @@ public class AppDB {
                     locDet[2]=String.format("%s,%s",rsFacDB.getString("LAT"),rsFacDB.getString("LON"));
                     locDet[3]=rsFacDB.getString("COURSE");
                 }
-                System.out.println(locDet[0]);
-                System.out.println(locDet[1]);
-                System.out.println(locDet[2]);
-                System.out.println(locDet[3]);
+//                System.out.println(locDet[0]);
+//                System.out.println(locDet[1]);
+//                System.out.println(locDet[2]);
+//                System.out.println(locDet[3]);
             }
         }catch(SQLException se){
                 System.out.println("SQL error for inProg catch:"+se);
