@@ -37,7 +37,7 @@ import org.apache.derby.jdbc.*;
  * @author Pranav Phadke
  */
 public class AppDB {
-    private String protocol="jdbc:derby:";
+    private String protocol="jdbc:derby:bin/";
     private String framework="embedded";
     static List<String> facNameList;
     List<String> facDet,facLoc;
@@ -66,7 +66,7 @@ public class AppDB {
             p = new Properties();
             p.put("user", "APP");
             //Create connection to DB
-            conn=DriverManager.getConnection(protocol+facultyDB+";create=true");//p
+            conn=DriverManager.getConnection(protocol+facultyDB+";create=false");//p
             setSchema=conn.prepareStatement("set schema ?");
             setSchema.setString(1,"APP");
             setSchema.executeUpdate();
@@ -113,18 +113,19 @@ public class AppDB {
         if (framework.equals("embedded")) {
             System.out.println("Closing DB connection");
             try{
-                DriverManager.getConnection(protocol+";shutdown=true");
+                DriverManager.getConnection(protocol+facultyDB+";shutdown=true");//protocol+
             }catch(SQLException see){
-                if (( (see.getErrorCode() == 50000)
-                        && ("XJ015".equals(see.getSQLState()) ))) {
+                if (( (see.getErrorCode() == 45000)
+                        && ("08006".equals(see.getSQLState()) ))) {
                     // we got the expected exception
-                    System.out.println("Derby shutdown normal");
+                    System.out.println("Derby shutdown normal: "+see.getErrorCode()+" "+see.getSQLState());
                     // For single database shutdown, the expected
                     // SQL state is "08006", and the error code is 45000.
+//                  // For complete system shutdown  SQL state is "XJ015" and error code is 50000
                 } else {
                     // if the error code or SQLState is different, we have
                     // an unexpected exception (shutdown failed)
-                    System.err.println("Derby did not shutdown normally:"+see);
+                    System.err.println("Derby did not shutdown normally: "+see.getErrorCode()+" "+see.getSQLState());
                 }
             }finally{
                 // Release resources
