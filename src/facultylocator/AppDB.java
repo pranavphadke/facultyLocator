@@ -113,19 +113,19 @@ public class AppDB {
         if (framework.equals("embedded")) {
             System.out.println("Closing DB connection");
             try{
-                DriverManager.getConnection(protocol+facultyDB+";shutdown=true");//protocol+
+                DriverManager.getConnection(protocol+facultyDB+";shutdown=true");
             }catch(SQLException see){
                 if (( (see.getErrorCode() == 45000)
                         && ("08006".equals(see.getSQLState()) ))) {
                     // we got the expected exception
-                    System.out.println("Derby shutdown normal: "+see.getErrorCode()+" "+see.getSQLState());
+                    System.out.println("Derby shutdown normal: "+see.getErrorCode()+" "+see.getSQLState()+" "+see);
                     // For single database shutdown, the expected
                     // SQL state is "08006", and the error code is 45000.
 //                  // For complete system shutdown  SQL state is "XJ015" and error code is 50000
                 } else {
                     // if the error code or SQLState is different, we have
                     // an unexpected exception (shutdown failed)
-                    System.err.println("Derby did not shutdown normally: "+see.getErrorCode()+" "+see.getSQLState());
+                    System.err.println("Derby did not shutdown normally: "+see.getErrorCode()+" "+see.getSQLState()+" "+see);
                 }
             }finally{
                 // Release resources
