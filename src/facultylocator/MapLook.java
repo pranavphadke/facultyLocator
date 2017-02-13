@@ -40,7 +40,6 @@ public class MapLook extends JPanel {
         JLabel tempLabel=new JLabel(mapViewString);
         tempLabel.setHorizontalAlignment(JLabel.CENTER);
         add(tempLabel,BorderLayout.CENTER);
-        //
     }
     public MapLook(String[] locDetails){
 //      For one faculty member
@@ -51,7 +50,6 @@ public class MapLook extends JPanel {
             // no classes for the rest of the day
             currCoord=locDetails[0];
             currLocName=locDetails[1];
-//            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with final loc at "+currCoord+", "+currLocName+" </html>");
             imgLink= "https://maps.googleapis.com/maps/api/staticmap?center="+focCoord+"&zoom=17&size=640x480&markers=color:red%7Clabel:C%7C"+currCoord+"&key="+key;
         }else{
             // will also be at locations other than office
@@ -59,12 +57,10 @@ public class MapLook extends JPanel {
             currLocName=locDetails[1];
             futCoord=locDetails[2];
             futLocName=locDetails[3];
-//            mapViewString=new String("<html>Map for "+facName[0]+" "+facName[1]+" with current loc at "+currCoord+", "+currLocName+" and next loc at "+futCoord+", "+futLocName+"</html>");
             imgLink = "https://maps.googleapis.com/maps/api/staticmap?center="+focCoord+"&zoom=17&size=640x480&markers=color:red%7Clabel:C%7C"+currCoord+"&markers=color:blue%7Csize:mid%7Clabel:N%7C"+futCoord+"&key="+key;
         }
         setBackground(Color.GRAY);
         setLayout(new BorderLayout());
-        // Temp label
         mapViewString=new String("<html><img src="+imgLink+"></html>");
         JLabel tempLabel=new JLabel(mapViewString);
         tempLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -85,44 +81,29 @@ public class MapLook extends JPanel {
         String focusCoord = "27.526048,-97.881323";// default focus
         String[] c1=coords[0].split(",");
         String[] c2=coords[2].split(",");
-//        System.out.println(coords[0]);
-//        System.out.println(coords[2]);
         if(coords[0].equals(coords[2])){
-//            System.out.println("Enter case 0");
             focusCoord=coords[0];
         }else{
-//            System.out.println("Enter case 0.1");
             lat1=Double.parseDouble(c1[0]);
             lon1=Double.parseDouble(c1[1]);
             lat2=Double.parseDouble(c2[0]);
             lon2=Double.parseDouble(c2[1]);
-//            System.out.println(lat1);
-//            System.out.println(lon1);
-//            System.out.println(lat2);
-//            System.out.println(lon2);
             deltaLat=abs(lat1-lat2)/2;
             deltaLon=abs(lon1-lon2)/2;
             if(lat1<lat2){
-//                System.out.println("Enter case 1");
                 if(lon1<lon2){
-//                    System.out.println("Enter case 1.1");
                     focusCoord=(lat1+deltaLat)+","+(lon1+deltaLon);
                 }else{
-//                    System.out.println("Enter case 1.2");
                     focusCoord=(lat1+deltaLat)+","+(lon2+deltaLon);
                 }
             }else{
-//                System.out.println("Enter case 2");
                 if(lon1<lon2){
-//                    System.out.println("Enter case 2.1");
                     focusCoord=(lat2+deltaLat)+","+(lon1+deltaLon);
                 }else{
-//                    System.out.println("Enter case 2.2");
                     focusCoord=(lat2+deltaLat)+","+(lon2+deltaLon);
                 }
             }
         }
-//        System.out.println(focusCoord);
         return(focusCoord);
     }
 }
