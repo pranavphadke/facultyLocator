@@ -63,10 +63,11 @@ public class AppDB {
 //        }
         try{
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-            p = new Properties();
-            p.put("user", "APP");
+//            p = new Properties();
+//            p.put("user", "admin");
+//            p.put("pass","H1511");
             //Create connection to DB
-            conn=DriverManager.getConnection(protocol+facultyDB+";create=false");//p
+            conn=DriverManager.getConnection(protocol+facultyDB+";create=false;user=admin;password=H1511");//p
             setSchema=conn.prepareStatement("set schema ?");
             setSchema.setString(1,"APP");
             setSchema.executeUpdate();
@@ -113,7 +114,7 @@ public class AppDB {
         if (framework.equals("embedded")) {
             System.out.println("Closing DB connection");
             try{
-                DriverManager.getConnection(protocol+facultyDB+";shutdown=true");
+                DriverManager.getConnection(protocol+facultyDB+";shutdown=true;user=admin;password=H1511");
             }catch(SQLException see){
                 if (( (see.getErrorCode() == 45000)
                         && ("08006".equals(see.getSQLState()) ))) {
