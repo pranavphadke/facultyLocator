@@ -37,21 +37,22 @@ import org.apache.derby.jdbc.*;
  * @author Pranav Phadke
  */
 public class AppDB {
-    private String protocol="jdbc:derby:";
+    private String protocol="jdbc:derby:bin/";
     private String framework="embedded";
     static List<String> facNameList;
     List<String> facDet,facLoc;
     static String[] locDet={"","","",""};
 //    public String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-    String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null;
+    String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null,key;
     int ofExt=9999,tableCheckFlag=0,countFacCourse=0;
     Statement qrFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
-    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null;
+    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null;
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
+    static boolean onlyOffFlag;
     public AppDB(){
 //        System.out.println("Check for db mode...");
 //        if (arg.length>0) {
@@ -62,10 +63,11 @@ public class AppDB {
 //        }
         try{
             DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-            p = new Properties();
-            p.put("user", "APP");
+//            p = new Properties();
+//            p.put("user", "admin");
+//            p.put("pass","H1511");
             //Create connection to DB
-            conn=DriverManager.getConnection(protocol+facultyDB+";create=true");//p
+            conn=DriverManager.getConnection(protocol+facultyDB+";create=false;user=admin;password=H1511");//p
             setSchema=conn.prepareStatement("set schema ?");
             setSchema.setString(1,"APP");
             setSchema.executeUpdate();
@@ -75,9 +77,18 @@ public class AppDB {
             //Create query statement to the DB to check against tables 
             qrFacDB=conn.createStatement();
             conn.commit();
+            apiKey=qrFacDB.executeQuery("SELECT APIKEY FROM APP.GMAPS");
+            apiKey.next();
+            setAPIKey(apiKey.getString("APIKEY"));
         }catch(SQLException se){
             System.out.println("SQL error for main catch:"+se);
         }
+    }
+    public void setAPIKey(String k){
+        key=k;
+    }
+    public String getAPIKey(){
+        return(key);
     }
     public void addFacDet(String fName, String lName, String oNum,String eAdd){
         try{
@@ -103,18 +114,19 @@ public class AppDB {
         if (framework.equals("embedded")) {
             System.out.println("Closing DB connection");
             try{
-                DriverManager.getConnection(protocol+";shutdown=true");
+                DriverManager.getConnection(protocol+facultyDB+";shutdown=true;user=admin;password=H1511");
             }catch(SQLException see){
-                if (( (see.getErrorCode() == 50000)
-                        && ("XJ015".equals(see.getSQLState()) ))) {
+                if (( (see.getErrorCode() == 45000)
+                        && ("08006".equals(see.getSQLState()) ))) {
                     // we got the expected exception
-                    System.out.println("Derby shutdown normal");
+                    System.out.println("Derby shutdown normal: "+see.getErrorCode()+" "+see.getSQLState()+" "+see);
                     // For single database shutdown, the expected
                     // SQL state is "08006", and the error code is 45000.
+//                  // For complete system shutdown  SQL state is "XJ015" and error code is 50000
                 } else {
                     // if the error code or SQLState is different, we have
                     // an unexpected exception (shutdown failed)
-                    System.err.println("Derby did not shutdown normally:"+see);
+                    System.err.println("Derby did not shutdown normally: "+see.getErrorCode()+" "+see.getSQLState()+" "+see);
                 }
             }finally{
                 // Release resources
@@ -236,8 +248,14 @@ public class AppDB {
                 if(countFacCourse==0){
                     // No class for faculty today
                     availOffice();
+                    locDet[0]=offCoordString;
+                    locDet[1]=String.format("Faculty Office in %s",ofNum);
+                    locDet[2]=offCoordString;
+                    locDet[3]=String.format("Faculty Office in %s",ofNum);
+                    setOnlyOffice(true);
                     futStatus="</html>";
                 }else{
+                    setOnlyOffice(false);
 //                    System.out.println("Creating result query..");
                     rsFacDB=qrFacDB.executeQuery(String.format("SELECT COURSES.COURSE,COURSES.ROOM,COURSES.STARTTIME,COURSES.ENDTIME,LOCATION.LAT,LOCATION.LON FROM APP.COURSES INNER JOIN APP.LOCATION ON COURSES.BLDG =LOCATION.BLDG WHERE DAYS LIKE '%s' AND upper(COURSES.INSTRUCTFIRSTNAME)='%s' AND upper(COURSES.INSTRUCTLASTNAME)='%s' AND COURSES.ENDTIME >= '%s' ORDER BY COURSES.ENDTIME asc",likeCond,frsName.toUpperCase(),lstName.toUpperCase(),hourCond));//COURSES.STARTTIME
 //                    System.out.println("Query created and passed");
@@ -330,10 +348,10 @@ public class AppDB {
                     locDet[2]=String.format("%s,%s",rsFacDB.getString("LAT"),rsFacDB.getString("LON"));
                     locDet[3]=rsFacDB.getString("COURSE");
                 }
-                System.out.println(locDet[0]);
-                System.out.println(locDet[1]);
-                System.out.println(locDet[2]);
-                System.out.println(locDet[3]);
+//                System.out.println(locDet[0]);
+//                System.out.println(locDet[1]);
+//                System.out.println(locDet[2]);
+//                System.out.println(locDet[3]);
             }
         }catch(SQLException se){
                 System.out.println("SQL error for inProg catch:"+se);
@@ -344,6 +362,19 @@ public class AppDB {
     }
     public String getFutStatus(){
         return(futStatus);
+    }
+    public String[] getLocDet(){
+        return(locDet);
+    }
+    public void setOnlyOffice(boolean flag_1){
+        if (flag_1==true){
+            onlyOffFlag=true;
+        } else{
+            onlyOffFlag=false;
+        }
+    }
+    public boolean getOnlyOffice(){
+        return(onlyOffFlag);
     }
     public void setDayCode(int day){
         if(day==2){

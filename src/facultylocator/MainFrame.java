@@ -29,7 +29,7 @@ public class MainFrame extends JFrame{
     public static CardLayout middleContentLay;
     public static TopPanelWHome topContent;
     private JLabel bottomContent;
-    private final Dimension minSize=new Dimension(640,480);
+    private final Dimension minSize=new Dimension(985,575);// For 640x480 map
     public static AppDB db=new AppDB();
     public MainFrame(String title) {
         super(title);
