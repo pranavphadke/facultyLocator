@@ -70,7 +70,7 @@ public class MapLook extends JPanel {
 //        Get all coords in DB
         setBackground(Color.GRAY);
         setLayout(new BorderLayout());
-        String mapViewString=new String("<html>All MapView content here!</html>");
+        String mapViewString=new String("");//<html>All MapView content here!</html>
         // Temp label
         JLabel tempLabel=new JLabel(mapViewString);
         tempLabel.setHorizontalAlignment(JLabel.CENTER);
