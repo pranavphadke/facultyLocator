@@ -55,7 +55,7 @@ public class LogIn extends JPanel{
         cs.gridwidth=1;
         add(lbUsername,cs);
  
-        tfUsername=new JTextField(40);
+        tfUsername=new JTextField(35);
         cs.gridx=1;
         cs.gridy=0;
         cs.gridwidth =2;
@@ -67,7 +67,7 @@ public class LogIn extends JPanel{
         cs.gridwidth=1;
         add(lbPassword,cs);
  
-        pfPassword=new JPasswordField(8);
+        pfPassword=new JPasswordField(35);
         cs.gridx=1;
         cs.gridy=1;
         cs.gridwidth=2;
@@ -84,13 +84,17 @@ public class LogIn extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 if (MainFrame.db.authenticate(getUsername(), getPassword())) {
                     succeeded = true;
-                    // set card to AdminConsole
+                    // clear password field
+                    pfPassword.setText("");
+                    // set card to InfoManagement
+                    clUsageLogIn=(CardLayout)(MainFrame.middleContentLay);
+                    clUsageLogIn.show(MainFrame.middleContent, "InfoManagement");
                 } else {
                     succeeded = false;
-                    // reset username and password fields
+                    // clear username and password fields
                     tfUsername.setText("");
                     pfPassword.setText("");
-                    
+                    // Display error dialog box
                     JOptionPane.showMessageDialog(LogIn.this,"Incorrect login or password","Error",JOptionPane.ERROR_MESSAGE);
                 }
             }
