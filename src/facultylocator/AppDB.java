@@ -48,7 +48,7 @@ public class AppDB {
     Statement qrFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
-    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null;
+    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null,adminAuth=null;
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
@@ -390,5 +390,24 @@ public class AppDB {
         }else{
             dayOfWeek="NA";
         }
+    }
+    public boolean authenticate(String username, String password) {
+        boolean adminAuthOk=false;
+        try{
+            // check username and password against DB
+            // create query statement
+            adminAuth=qrFacDB.executeQuery(String.format("SELECT PIN FROM APP.ADMINS WHERE upper(ADMINS.ID)='%s'",username.toUpperCase()));
+            // check if result set has exactly one entry
+            if(adminAuth.next()){
+                // if yes then
+                // if password provided match the result set then
+                if (password.equals(adminAuth.getString("PIN"))) {
+                    adminAuthOk=true;
+                } else adminAuthOk=false;// else return false
+            }else adminAuthOk=false;// else return false
+        }catch(SQLException se){
+            System.out.println("SQL error for authenticate catch:"+se);
+        }
+        return adminAuthOk;
     }
 }
