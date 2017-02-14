@@ -27,16 +27,19 @@ public class MiddlePanel extends JPanel{
     public static FacultySelector facSelect;
     public static FacultyInfo facInfo;
     public static MapLook mapL;
-    String[] contentList={"FacultySelector","FacultyInfo","MapView"};
+    public static LogIn adminCon;
+//    String[] contentList={"FacultySelector","FacultyInfo","MapView"};
     public MiddlePanel(){
 //        MainFrame.db.printContent("BASICDETAIL");
         setLayout(midContent);
         facSelect=new FacultySelector();
 //        facInfo=new FacultyInfo();
         mapL=new MapLook();
+        adminCon=new LogIn();
         add(facSelect,"FacultySelector");
 //        add(facInfo,"FacultyInfo");
         add(mapL,"MapView");
+        add(adminCon,"AdminConsole");
     }
     public CardLayout getLayout(){
         return(midContent);

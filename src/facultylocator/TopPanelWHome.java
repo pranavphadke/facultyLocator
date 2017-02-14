@@ -18,8 +18,11 @@ package facultylocator;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
@@ -28,7 +31,7 @@ import javax.swing.SwingConstants;
  * @author Pranav Phadke
  */
 public class TopPanelWHome extends TopPanel{
-    JButton backButton;
+    JButton backButton,adminConsole;
     private static CardLayout clUsageTopPan;
     public TopPanelWHome(){
         super();
@@ -44,6 +47,20 @@ public class TopPanelWHome extends TopPanel{
 //                System.out.println("Set card complete");
             }
         });
-        mainPageButtonPanel.add(backButton,BorderLayout.LINE_START);// Aligns button to the left of the panel
+        adminConsole=new JButton("Admin Console");
+        adminConsole.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent adConBut){
+//                System.out.println("Going back to faculty selection");
+//                System.out.println("Importing CardLayout");
+                clUsageTopPan=(CardLayout)(MainFrame.middleContentLay);
+//                System.out.println("Imported CardLayout");
+                clUsageTopPan.show(MainFrame.middleContent, "AdminConsole");
+//                System.out.println("Set card complete");
+            }
+        });
+        mainPageButtonPanel.setLayout(new BoxLayout(mainPageButtonPanel, BoxLayout.LINE_AXIS));
+        mainPageButtonPanel.add(backButton);
+        mainPageButtonPanel.add(adminConsole);
     }
 }
