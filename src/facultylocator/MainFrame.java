@@ -42,7 +42,7 @@ public class MainFrame extends JFrame{
         middleContent=new MiddlePanel();
         middleContentLay=middleContent.getLayout();
         content.add(middleContent,BorderLayout.CENTER);
-        bottomContent=new JLabel("Copyright info");
+        bottomContent=new JLabel("Copyright 2016-2017 Pranav Phadke");
         content.add(bottomContent,BorderLayout.PAGE_END);
 //        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
