@@ -31,13 +31,13 @@ public class InfoManagement extends JPanel{
         super(new GridLayout(1,1));
         JTabbedPane infoManage=new JTabbedPane();
         // create cards/tabs
-        JPanel basicInfo=new JPanel();
+        InfoEditor basicInfo=new InfoEditor("basicInfo");
         infoManage.addTab("Faculty Details",basicInfo);
         
-        JPanel buildingInfo=new JPanel();
+        InfoEditor buildingInfo=new InfoEditor("buildingInfo");
         infoManage.addTab("Building Information",buildingInfo);
         
-        JPanel courseSched=new JPanel();
+        InfoEditor courseSched=new InfoEditor("courseSched");
         infoManage.addTab("Course Schedule",courseSched);
         add(infoManage);
     }
