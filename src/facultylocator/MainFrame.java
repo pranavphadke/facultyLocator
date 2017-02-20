@@ -50,7 +50,7 @@ public class MainFrame extends JFrame{
             public void windowClosing(WindowEvent e)
             {
                 JFrame frame = (JFrame)e.getSource();
-                int result = JOptionPane.showConfirmDialog(frame,"Are you sure you want to exit the application?","Exit Application",JOptionPane.YES_NO_OPTION);
+                int result = JOptionPane.showConfirmDialog(frame,"Are you sure you want to exit?","Exit Faculty Locator",JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION){
                     db.shutDB();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

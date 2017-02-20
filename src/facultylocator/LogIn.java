@@ -95,7 +95,7 @@ public class LogIn extends JPanel{
                     tfUsername.setText("");
                     pfPassword.setText("");
                     // Display error dialog box
-                    JOptionPane.showMessageDialog(LogIn.this,"Incorrect login or password","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(LogIn.this,"Incorrect username or password","Error",JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
