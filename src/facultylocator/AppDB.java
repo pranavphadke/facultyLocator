@@ -413,15 +413,15 @@ public class AppDB {
     }
     public void runInfoGetterQuery(String query,int cols){
         try{
-            int row=-1;
-            // find how much info will be returned
+            int row=0,cF=0;
+            // find how much info will be returned (rows for dbInfoData)
             countInfo=qrFacDB.executeQuery("SELECT COUNT(*) FROM APP."+query);
             if(countInfo.next()){
             countInfoEntry=countInfo.getInt(1);
             }
             // create new string [][] with specific dims
             if(countInfoEntry>0){
-                dbInfoData=new Object [countInfoEntry][cols];
+                dbInfoData=new Object [countInfoEntry+1][cols];
             }else{
                 dbInfoData=new Object [1][cols];
             }
@@ -429,7 +429,7 @@ public class AppDB {
             runInfoQuery=qrFacDB.executeQuery("SELECT * FROM APP."+query);
             // save result set in string [][]
             while(runInfoQuery.next()){
-                row++;// Move this at the end of while and set row=0 to have one additional empty row
+//                row++;
                 if(query.equals("BASICDETAIL")){
                     dbInfoData[row][0]=runInfoQuery.getString("FIRSTNAME");
                     dbInfoData[row][1]=runInfoQuery.getString("LASTNAME");
@@ -453,7 +453,12 @@ public class AppDB {
                 }else{
                      System.out.println("Not yet implemented!");
                 }
-//                row++;
+                row++;
+                if(row==countInfoEntry){
+                    for(cF=0;cF<cols;cF++){                  
+                        dbInfoData[row][cF]="";
+                    }                    
+                }
             }
         }catch(SQLException se){
             System.out.println("SQL error for runQuery catch:"+se);
