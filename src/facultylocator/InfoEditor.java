@@ -97,9 +97,9 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         updateB=new JButton("Update table");
         updateB.addActionListener(this);
         buttonP.add(updateB);
-        refreshB=new JButton("Refresh table");
-        refreshB.addActionListener(this);
-        buttonP.add(refreshB);
+//        refreshB=new JButton("Refresh table");
+//        refreshB.addActionListener(this);
+//        buttonP.add(refreshB);
         //create table model with data and column identifiers
         DefaultTableModel model = new DefaultTableModel(data, colIden.toArray()); 
 //        {
@@ -136,16 +136,11 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
 
     @Override
     public void actionPerformed(ActionEvent e) {
-           // Identify the button that initiated the event.
-
+        // Identify the button that initiated the event.
         JButton jb = (JButton) e.getSource ();
-
         // Obtain the button's label.
-
         String label = jb.getText ();
-
         // Either delete or append a row, as appropriate.
-
         if (label.equals ("Remove"))
         {
           DefaultTableModel dtm = (DefaultTableModel) infoTable.getModel ();
