@@ -9,6 +9,8 @@ import java.awt.*;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.PAGE_END;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 //import java.awt.event.ActionListener;
 import javax.swing.*;
 //import javax.swing.JPanel;
@@ -27,16 +29,47 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
     JPanel buttonP;
 //    GridLayout overall=new GridLayout(2,1);
     BorderLayout overall=new BorderLayout();
+    ArrayList colIden=new ArrayList();
+    Object [][] data;
+    String popCourseSched="SELECT * FROM APP.COURSES";
+    @SuppressWarnings("empty-statement")
     public InfoEditor(String infoType){
         // set DB query keywords for Basic Information, Course Schedule or Building Info
         switch (infoType){
             case "basicInfo":{
+                // reset column identifiers and set new indentifiers
+                colIden.clear();
+                colIden.addAll(Arrays.asList("First Name","Last Name","Office Number (ENGC 303)","Office Extension (2003)","Email Address"));
+                // set query and pass it to AppDB
+                MainFrame.db.runInfoGetterQuery("BASICDETAIL",colIden.size());
+                // get table data from AppDB
+                data= MainFrame.db.getDBInfoData();
+                // null dbInfoData
+                MainFrame.db.nullDBInfoData();
                 break;
             }
             case "buildingInfo":{
+                // reset column identifiers and set new indentifiers
+                colIden.clear();
+                colIden.addAll(Arrays.asList("Building Code (ENGC)","GPS Coordinates: Latitude","GPS Coordinates: Longitude","Building Name"));
+                // set query and pass it to AppDB
+                MainFrame.db.runInfoGetterQuery("LOCATION",colIden.size());
+                // get table data from AppDB
+                data= MainFrame.db.getDBInfoData();
+                // null dbInfoData
+                MainFrame.db.nullDBInfoData();
                 break;
             }
             case "courseSched":{
+                // reset column identifiers and set new indentifiers
+                colIden.clear();
+                colIden.addAll(Arrays.asList("Course Prefix Number Section (MEEN 1320 001)","Instructor's First Name","Instructor's Last Name","Days (MTWRF)","Start Time (15:00:00)","End Time (16:30:00)","Room (ENGC 275)","Building Code (ENGC)"));
+                // set query and pass it to AppDB
+                MainFrame.db.runInfoGetterQuery("COURSES",colIden.size());
+                // get table data from AppDB
+                data= MainFrame.db.getDBInfoData();
+                // null dbInfoData
+                MainFrame.db.nullDBInfoData();
                 break;
             }
             default:System.out.println("Correct tab not called in InfoManagement");break;
@@ -59,16 +92,18 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         buttonP.add(refreshB);
 //        System.out.println("Inside InfoEditor!");
         //headers for the table
-        String[] columns = new String[] {"Id", "Name", "Hourly Rate", "Part Time"};// test column identifiers
+//        colIden.addAll(Arrays.asList("Id", "Name", "Hourly Rate", "Part Time"));
+//        String[] columns = new String[] {"Id", "Name", "Hourly Rate", "Part Time"};// test column identifiers
         //actual data for the table in a 2d array
-        Object[][] data = new Object[][] {{1, "John", 40.0, false },{2, "Rambo", 70.0, false },{3, "Zorro", 60.0, true }};//test data
+//        test=new String[5][10];
+//        data = new Object[][] {{1, "John", 40.0, false },{2, "Rambo", 70.0, false },{3, "Zorro", 60.0, true }};//test data
         
 //        final Class[] columnClass = new Class[] {
 //        Double.class, String.class, String.class, Boolean.class
 //        };
 
         //create table model with data
-        DefaultTableModel model = new DefaultTableModel(data, columns); 
+        DefaultTableModel model = new DefaultTableModel(data, colIden.toArray()); 
 //        {
 //            @Override
 //            public boolean isCellEditable(int row, int column)// Index starts at 0

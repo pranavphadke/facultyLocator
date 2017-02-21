@@ -42,13 +42,14 @@ public class AppDB {
     static List<String> facNameList;
     List<String> facDet,facLoc;
     static String[] locDet={"","","",""};
+    Object [][] dbInfoData;
 //    public String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null,key;
-    int ofExt=9999,tableCheckFlag=0,countFacCourse=0;
+    int ofExt=9999,tableCheckFlag=0,countFacCourse=0,countInfoEntry=0;
     Statement qrFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
-    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null,adminAuth=null;
+    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null,adminAuth=null,countInfo=null,runInfoQuery=null;
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
@@ -409,5 +410,59 @@ public class AppDB {
             System.out.println("SQL error for authenticate catch:"+se);
         }
         return adminAuthOk;
+    }
+    public void runInfoGetterQuery(String query,int cols){
+        try{
+            int row=-1;
+            // find how much info will be returned
+            countInfo=qrFacDB.executeQuery("SELECT COUNT(*) FROM APP."+query);
+            if(countInfo.next()){
+            countInfoEntry=countInfo.getInt(1);
+            }
+            // create new string [][] with specific dims
+            if(countInfoEntry>0){
+                dbInfoData=new Object [countInfoEntry][cols];
+            }else{
+                dbInfoData=new Object [1][cols];
+            }
+            // run main query
+            runInfoQuery=qrFacDB.executeQuery("SELECT * FROM APP."+query);
+            // save result set in string [][]
+            while(runInfoQuery.next()){
+                row++;// Move this at the end of while and set row=0 to have one additional empty row
+                if(query.equals("BASICDETAIL")){
+                    dbInfoData[row][0]=runInfoQuery.getString("FIRSTNAME");
+                    dbInfoData[row][1]=runInfoQuery.getString("LASTNAME");
+                    dbInfoData[row][2]=runInfoQuery.getString("OFFNUM");
+                    dbInfoData[row][3]=runInfoQuery.getString("OFFEXT");
+                    dbInfoData[row][4]=runInfoQuery.getString("EMAIL");
+                }else if(query.equals("LOCATION")){
+                    dbInfoData[row][0]=runInfoQuery.getString("BLDG");
+                    dbInfoData[row][1]=runInfoQuery.getString("LAT");
+                    dbInfoData[row][2]=runInfoQuery.getString("LON");
+                    dbInfoData[row][3]=runInfoQuery.getString("BLDGNAME");
+                 }else if(query.equals("COURSES")){
+                    dbInfoData[row][0]=runInfoQuery.getString("COURSE");
+                    dbInfoData[row][1]=runInfoQuery.getString("INSTRUCTFIRSTNAME");
+                    dbInfoData[row][2]=runInfoQuery.getString("INSTRUCTLASTNAME");
+                    dbInfoData[row][3]=runInfoQuery.getString("DAYS");
+                    dbInfoData[row][4]=runInfoQuery.getString("STARTTIME");
+                    dbInfoData[row][5]=runInfoQuery.getString("ENDTIME");
+                    dbInfoData[row][6]=runInfoQuery.getString("ROOM");
+                    dbInfoData[row][7]=runInfoQuery.getString("BLDG");
+                }else{
+                     System.out.println("Not yet implemented!");
+                }
+//                row++;
+            }
+        }catch(SQLException se){
+            System.out.println("SQL error for runQuery catch:"+se);
+        }
+    }
+    public Object [][] getDBInfoData(){
+        return dbInfoData;
+    }
+    public void nullDBInfoData(){
+        dbInfoData=null;
     }
 }
