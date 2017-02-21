@@ -1,8 +1,18 @@
 /*
- *  Application designed by Pranav Phadke
- *  Free to share and modify with credit to the original author
- *  Used to track faculty members at TAMU-K
- */
+*   Copyright 2016-2017 Pranav Phadke
+
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
+
+*       http://www.apache.org/licenses/LICENSE-2.0
+
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License. 
+*/
 package facultylocator;
 
 import java.awt.*;
@@ -90,19 +100,7 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         refreshB=new JButton("Refresh table");
         refreshB.addActionListener(this);
         buttonP.add(refreshB);
-//        System.out.println("Inside InfoEditor!");
-        //headers for the table
-//        colIden.addAll(Arrays.asList("Id", "Name", "Hourly Rate", "Part Time"));
-//        String[] columns = new String[] {"Id", "Name", "Hourly Rate", "Part Time"};// test column identifiers
-        //actual data for the table in a 2d array
-//        test=new String[5][10];
-//        data = new Object[][] {{1, "John", 40.0, false },{2, "Rambo", 70.0, false },{3, "Zorro", 60.0, true }};//test data
-        
-//        final Class[] columnClass = new Class[] {
-//        Double.class, String.class, String.class, Boolean.class
-//        };
-
-        //create table model with data
+        //create table model with data and column identifiers
         DefaultTableModel model = new DefaultTableModel(data, colIden.toArray()); 
 //        {
 //            @Override
@@ -118,7 +116,6 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
 //    //            return columnClass[columnIndex];
 //    //        }
 //        };
-        // use setValueAt 
         model.addTableModelListener(this);
         infoTable=new JTable(model){
             public boolean isCellEditable(int row, int column)// Index starts at 0
@@ -132,7 +129,6 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         add(infoPane,CENTER);
         add(buttonP,PAGE_END);
         // use getValueAt to get updated values    
-
     }
     public InfoEditor(){
         this("basicInfo"); 
