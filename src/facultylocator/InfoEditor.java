@@ -52,27 +52,21 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
     DefaultTableModel model;
     @SuppressWarnings("empty-statement")
     public InfoEditor(String infoType){
-        // set DB query keywords for Basic Information, Course Schedule or Building Info
+        // set DB table headers
         dbTblHead.add(new ArrayList<String>());
         dbTblHead.get(0).add("FIRSTNAME");
         dbTblHead.get(0).add("LASTNAME");
         dbTblHead.get(0).add("OFFNUM");
         dbTblHead.get(0).add("OFFEXT");
         dbTblHead.get(0).add("EMAIL");
-//        dbTblHead.add((ArrayList<String>) Arrays.asList("FIRSTNAME","LASTNAME","OFFNUM","OFFEXT","EMAIL"));
-//        System.out.println(temp.size());
+
         dbTblHead.add(new ArrayList<String>());
-//        temp.clear();
-        
         dbTblHead.get(1).add("BLDG");
         dbTblHead.get(1).add("LAT");
         dbTblHead.get(1).add("LON");
         dbTblHead.get(1).add("BLDGNAME");
-//        dbTblHead.add((ArrayList<String>) Arrays.asList("BLDG","LAT","LON","BLDGNAME"));
-//        System.out.println(temp.size());
+
         dbTblHead.add(new ArrayList<String>());
-//        temp.clear();
-        
         dbTblHead.get(2).add("COURSE");
         dbTblHead.get(2).add("INSTRUCTFIRSTNAME");
         dbTblHead.get(2).add("INSTRUCTLASTNAME");
@@ -81,16 +75,8 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         dbTblHead.get(2).add("ENDTIME");
         dbTblHead.get(2).add("ROOM");
         dbTblHead.get(2).add("BLDG");
-//        dbTblHead.add((ArrayList<String>) Arrays.asList("COURSE","INSTRUCTFIRSTNAME","INSTRUCTLASTNAME","DAYS","STARTTIME","ENDTIME","ROOM","BLDG"));
-//        System.out.println(temp.size());
-//        dbTblHead.add(temp);
-//        System.out.println(dbTblHead.size());
-//        temp.clear();
-         
-//        System.out.println(dbTblHead.get(0).size());
-//        temp=dbTblHead.get(0);
-//        System.out.println(temp.size());
-//        temp.clear();
+
+        // set DB query keywords for Basic Information, Course Schedule or Building Info
         switch (infoType){
             case "basicInfo":{
                 dbTblType=0;
