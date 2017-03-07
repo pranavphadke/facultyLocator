@@ -37,10 +37,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class InfoEditor extends JPanel implements ActionListener,TableModelListener{
     public JScrollPane infoPane;
-    public JTable infoTable;
+    public JTable infoTable=null;
     JButton addB,removeB,updateB,refreshB;
     JPanel buttonP;
-    int dbTblType,count=0;
+    int dbTblType,count=0,rowSel,colSel,eventType;
 //    GridLayout overall=new GridLayout(2,1);
     BorderLayout overall=new BorderLayout();
     ArrayList colIden=new ArrayList();
@@ -49,7 +49,7 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
     String[] dbTblName={"BASICDETAIL","LOCATION","COURSES"};
     Object [][] data;
     String popCourseSched="SELECT * FROM APP.COURSES";
-    DefaultTableModel model;
+    DefaultTableModel model=null;
     @SuppressWarnings("empty-statement")
     public InfoEditor(String infoType){
         // set DB table headers
@@ -83,12 +83,12 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                 // reset column identifiers and set new indentifiers
                 colIden.clear();
                 colIden.addAll(Arrays.asList("First Name","Last Name","Office Number (ENGC 303)","Office Extension (2003)","Email Address"));
-                // set query and pass it to AppDB
-                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
-                // get table data from AppDB
-                data= MainFrame.db.getDBInfoData();
-                // null dbInfoData
-                MainFrame.db.nullDBInfoData();
+//                // set query and pass it to AppDB
+//                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
+//                // get table data from AppDB
+//                data= MainFrame.db.getDBInfoData();
+//                // null dbInfoData
+//                MainFrame.db.nullDBInfoData();
                 break;
             }
             case "buildingInfo":{
@@ -96,12 +96,12 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                 // reset column identifiers and set new indentifiers
                 colIden.clear();
                 colIden.addAll(Arrays.asList("Building Code (ENGC)","GPS Coordinates: Latitude","GPS Coordinates: Longitude","Building Name"));
-                // set query and pass it to AppDB
-                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
-                // get table data from AppDB
-                data= MainFrame.db.getDBInfoData();
-                // null dbInfoData
-                MainFrame.db.nullDBInfoData();
+//                // set query and pass it to AppDB
+//                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
+//                // get table data from AppDB
+//                data= MainFrame.db.getDBInfoData();
+//                // null dbInfoData
+//                MainFrame.db.nullDBInfoData();
                 break;
             }
             case "courseSched":{
@@ -109,12 +109,12 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                 // reset column identifiers and set new indentifiers
                 colIden.clear();
                 colIden.addAll(Arrays.asList("Course Prefix Number Section (MEEN 1320 001)","Instructor's First Name","Instructor's Last Name","Days (MTWRF)","Start Time (15:00:00)","End Time (16:30:00)","Room (ENGC 275)","Building Code (ENGC)"));
-                // set query and pass it to AppDB
-                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
-                // get table data from AppDB
-                data= MainFrame.db.getDBInfoData();
-                // null dbInfoData
-                MainFrame.db.nullDBInfoData();
+//                // set query and pass it to AppDB
+//                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
+//                // get table data from AppDB
+//                data= MainFrame.db.getDBInfoData();
+//                // null dbInfoData
+//                MainFrame.db.nullDBInfoData();
                 break;
             }
             default:System.out.println("Correct tab not called in InfoManagement");break;
@@ -123,20 +123,21 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         setLayout(overall);
         buttonP.setLayout(new BoxLayout(buttonP, BoxLayout.LINE_AXIS));
         // create and add buttons
-        addB=new JButton("Add");
-        addB.addActionListener(this);
-        buttonP.add(addB);
-        removeB=new JButton("Remove");
+//        addB=new JButton("Add");
+//        addB.addActionListener(this);
+//        buttonP.add(addB);
+        removeB=new JButton("Remove Record");
         removeB.addActionListener(this);
         buttonP.add(removeB);
-        updateB=new JButton("Update table");
-        updateB.addActionListener(this);
-        buttonP.add(updateB);
+//        updateB=new JButton("Update table");
+//        updateB.addActionListener(this);
+//        buttonP.add(updateB);
 //        refreshB=new JButton("Refresh table");
 //        refreshB.addActionListener(this);
 //        buttonP.add(refreshB);
         //create table model with data and column identifiers
-        model = new DefaultTableModel(data, colIden.toArray()); 
+//        model = new DefaultTableModel(data, colIden.toArray());
+        model=getDBTableModel();
 //        {
 //            @Override
 //            public boolean isCellEditable(int row, int column)// Index starts at 0
@@ -151,16 +152,17 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
 //    //            return columnClass[columnIndex];
 //    //        }
 //        };
-        model.addTableModelListener(this);
-        infoTable=new JTable(model){
-            public boolean isCellEditable(int row, int column)// Index starts at 0
-            {
-//                if(row==model.getRowCount()-1){
-//                   return true; 
-//                }else return false;
-                return true;
-            }
-        };
+//        model.addTableModelListener(this);
+//        infoTable=new JTable(model){
+//            public boolean isCellEditable(int row, int column)// Index starts at 0
+//            {
+////                if(row==model.getRowCount()-1){
+////                   return true; 
+////                }else return false;
+//                return true;
+//            }
+//        };
+        updateTable();
         infoPane=new JScrollPane(infoTable);
         add(infoPane,CENTER);
         add(buttonP,PAGE_END);
@@ -172,28 +174,42 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Identify the button that initiated the event.
-        JButton jb = (JButton) e.getSource ();
-        // Obtain the button's label.
-        String label = jb.getText ();
-        // Either delete or append a row, as appropriate.
-        if (label.equals ("Remove"))
-        {
-          DefaultTableModel dtm = (DefaultTableModel) infoTable.getModel ();
-          int nRows = dtm.getRowCount ();
-          if (nRows != 0)
-            dtm.removeRow (nRows - 1);
-        }
-        else if (label.equals("Add"))
-        {
-          DefaultTableModel dtm = (DefaultTableModel) infoTable.getModel ();
-          Object [] data = { dtm.getRowCount ()+1,"Name", 30.0,true };
-          dtm.insertRow (dtm.getRowCount (), data);
-        }else if (label.equals("Update table")){
-            // Update entry in the DB
-        }else{
-            // Re-show the current tab
-        }
+//        // Identify the button that initiated the event.
+//        JButton jb = (JButton) e.getSource ();
+//        // Obtain the button's label.
+//        String label = jb.getText ();
+//        // Either delete or append a row, as appropriate.
+//        if (label.equals ("Remove Record")){
+            // Check if selected row is other than the last row
+            if (rowSel<model.getRowCount()-1){
+                eventType=2;
+                List headers=new ArrayList();
+                headers=dbTblHead.get(dbTblType);
+                FindNum locator=new FindNum();
+                String st=getStatement(colSel, rowSel, rowSel,locator.getIntArray(0,headers.size()),headers,eventType);
+                // display confirmation dialog box
+                int result = JOptionPane.showConfirmDialog(this,"Are you sure you want to delete selected record from the database?","Confirm Removal Action",JOptionPane.YES_NO_OPTION);
+                // execute statement using AppDB if YES and then refresh Panel
+                if (result == JOptionPane.YES_OPTION){
+                    System.out.println("Will execute this query..."+st+"... and refresh current pane");
+                    // Send and execute statment
+                    // Update table
+                    updateTable();
+                }else{
+                    System.out.println("Just refresh current pane");
+                    // Update table
+                    updateTable();
+                }
+            }else{
+                // display Warning dialog box
+            }
+//            DefaultTableModel dtm = (DefaultTableModel) infoTable.getModel ();
+//            int nRows = dtm.getRowCount ();
+//            if (nRows != 0)
+//            dtm.removeRow (nRows - 1);
+//        }else{
+//            // Re-show the current tab
+//        }
     }
 
     @Override
@@ -215,7 +231,7 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
 //        System.out.println(headers.size());
         FindNum locator=new FindNum();
         int[] ind=locator.removeNum(locator.getIntArray(0,headers.size()), column); 
-        int eventType=0;
+        eventType=0;
         // switch with getType()==TableModelEvent.UPDATE or.DELETE or .INSERT
         switch (e.getType()){
             case TableModelEvent.UPDATE:{
@@ -230,22 +246,28 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                     // execute statement using AppDB if YES and then refresh Panel
                     if (result == JOptionPane.YES_OPTION){
                         System.out.println("Will execute this query..."+st+"... and refresh current pane");
-                    }else System.out.println("Just refresh current pane");
-                    // Refresh Panel if NO
+                        // Send and execute statment
+                        // Update table
+                        updateTable();
+                    }else{
+                        System.out.println("Just refresh current pane");
+                        // Update table
+                        updateTable();
+                    }
                 }
             }
-            case TableModelEvent.DELETE:{
-            // .DELETE
-                // check if not the last empty row
-                if (firstRow<model.getRowCount()-1){
-                    eventType=2;
-                    // Get selected row
-                    // prepare statement
-                    // display confirmation dialog box
-                        // execute statement using AppDB if YES and then refresh Panel
-                        // Refresh Panel if NO
-                }
-            }
+//            case TableModelEvent.DELETE:{
+//            // .DELETE
+//                // check if not the last empty row
+//                if (firstRow<model.getRowCount()-1){
+//                    eventType=2;
+//                    // Get selected row
+//                    // prepare statement
+//                    // display confirmation dialog box
+//                        // execute statement using AppDB if YES and then refresh Panel
+//                        // Refresh Panel if NO
+//                }
+//            }
             case TableModelEvent.INSERT:{
             // .INSERT
                 // check only the last row
@@ -261,8 +283,14 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                         // execute statement using AppDB if YES and then refresh Panel
                         if (result == JOptionPane.YES_OPTION){
                             System.out.println("Will execute this query..."+st+"... and refresh current pane");
-                        }else System.out.println("Just refresh current pane");
-                        // Refresh Panel if NO
+                            // Send and execute statment
+                            // Update table
+                            updateTable();
+                        }else{
+                            System.out.println("Just refresh current pane");
+                            // Update table
+                            updateTable();
+                        }
                     }
                 }
             }
@@ -274,10 +302,10 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
             case 0:{
                 tblPrefix=tblPrefix+"UPDATE APP."+dbTblName[dbTblType]+" SET ";
                 for(int i=0;i<ind.length-1;i++){
-                    cond=cond+" "+head.get(ind[i])+"='"+model.getValueAt(fR,ind[i]);
+                    cond=cond+" "+head.get(ind[i])+"='"+model.getValueAt(fR,ind[i])+"'";
                     if(i<ind.length-2){
-                        cond=cond+"' AND";
-                    }else cond=cond+"'";
+                        cond=cond+" AND ";
+                    }//else cond=cond+"'";
                 }
                 change=change+head.get(col)+"='"+model.getValueAt(fR, col)+"'";
                 cond=" WHERE"+cond;
@@ -288,10 +316,10 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                 tblPrefix=tblPrefix+"INSERT INTO APP."+dbTblName[dbTblType]+" VALUES ";
                 change=change+"(";
                 for(int i=0;i<ind.length-1;i++){
-                    change=change+" '"+model.getValueAt(fR,ind[i])+"'";
+                    change=change+"'"+model.getValueAt(fR,ind[i])+"'";
                     
                     if (i<ind.length-2){
-                        change=change+",";
+                        change=change+" , ";
                     }
                 }
                 change=change+")";
@@ -301,7 +329,10 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
             case 2:{
                 tblPrefix=tblPrefix+"DELETE FROM APP."+dbTblName[dbTblType];
                 for(int i=0;i<ind.length-1;i++){
-                    cond=cond+head.get(ind[i])+"="+model.getValueAt(fR,ind[i]);
+                    cond=cond+head.get(ind[i])+"='"+model.getValueAt(fR,ind[i])+"'";
+                    if(i<ind.length-2){
+                        cond=cond+" AND ";
+                    }
                 }
                 cond=" WHERE "+cond;
 //                statement=statement+tblPrefix+cond;
@@ -310,5 +341,37 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         }
     statement=tblPrefix+change+cond;    
     return statement;
+    }
+    public DefaultTableModel getDBTableModel(){
+        // set query and pass it to AppDB
+        MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
+        // get table data from AppDB
+        data= MainFrame.db.getDBInfoData();
+        // null dbInfoData
+        MainFrame.db.nullDBInfoData();        
+        DefaultTableModel tblModel=new DefaultTableModel(data, colIden.toArray());
+        tblModel.addTableModelListener(this);
+        return tblModel;
+    }
+    public void updateTable(){
+        model=getDBTableModel();
+        if (infoTable==null){
+            infoTable=new JTable(model){
+                public boolean isCellEditable(int row, int column){// Index starts at 0
+                        return true;
+                }
+            };
+            infoTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            infoTable.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                   rowSel=infoTable.getSelectedRow();
+                   colSel=infoTable.getSelectedColumn();
+                   System.out.println(rowSel);
+                }
+            });
+        }else{
+            infoTable.setModel(model);
+        }
     }
 }
