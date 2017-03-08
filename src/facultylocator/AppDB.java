@@ -412,11 +412,11 @@ public class AppDB {
         }
         return adminAuthOk;
     }
-    public void runInfoGetterQuery(String query,int cols){
+    public void runInfoGetterQuery(String query,String cQuery,int cols){
         try{
             int row=0,cF=0;
             // find how much info will be returned (rows for dbInfoData)
-            countInfo=qrFacDB.executeQuery("SELECT COUNT(*) FROM APP."+query);
+            countInfo=qrFacDB.executeQuery("SELECT COUNT(*) FROM APP."+cQuery);
             if(countInfo.next()){
             countInfoEntry=countInfo.getInt(1);
             }
@@ -431,18 +431,18 @@ public class AppDB {
             // save result set in string [][]
             while(runInfoQuery.next()){
 //                row++;
-                if(query.equals("BASICDETAIL")){
+                if(cQuery.equals("BASICDETAIL")){
                     dbInfoData[row][0]=runInfoQuery.getString("FIRSTNAME");
                     dbInfoData[row][1]=runInfoQuery.getString("LASTNAME");
                     dbInfoData[row][2]=runInfoQuery.getString("OFFNUM");
                     dbInfoData[row][3]=runInfoQuery.getString("OFFEXT");
                     dbInfoData[row][4]=runInfoQuery.getString("EMAIL");
-                }else if(query.equals("LOCATION")){
+                }else if(cQuery.equals("LOCATION")){
                     dbInfoData[row][0]=runInfoQuery.getString("BLDG");
                     dbInfoData[row][1]=runInfoQuery.getString("LAT");
                     dbInfoData[row][2]=runInfoQuery.getString("LON");
                     dbInfoData[row][3]=runInfoQuery.getString("BLDGNAME");
-                 }else if(query.equals("COURSES")){
+                 }else if(cQuery.equals("COURSES")){
                     dbInfoData[row][0]=runInfoQuery.getString("COURSE");
                     dbInfoData[row][1]=runInfoQuery.getString("INSTRUCTFIRSTNAME");
                     dbInfoData[row][2]=runInfoQuery.getString("INSTRUCTLASTNAME");
