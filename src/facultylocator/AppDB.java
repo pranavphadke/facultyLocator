@@ -46,7 +46,7 @@ public class AppDB {
 //    public String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null,key;
     int ofExt=9999,tableCheckFlag=0,countFacCourse=0,countInfoEntry=0;
-    Statement qrFacDB=null;
+    Statement qrFacDB=null,stFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
     ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null,adminAuth=null,countInfo=null,runInfoQuery=null;
@@ -77,6 +77,7 @@ public class AppDB {
             conn.setAutoCommit(false);
             //Create query statement to the DB to check against tables 
             qrFacDB=conn.createStatement();
+            stFacDB=conn.createStatement();
             conn.commit();
             apiKey=qrFacDB.executeQuery("SELECT APIKEY FROM APP.GMAPS");
             apiKey.next();
@@ -461,7 +462,7 @@ public class AppDB {
                 }
             }
         }catch(SQLException se){
-            System.out.println("SQL error for runQuery catch:"+se);
+            System.out.println("SQL error for runInfoGetterQuery catch:"+se);
         }
     }
     public Object [][] getDBInfoData(){
@@ -469,5 +470,13 @@ public class AppDB {
     }
     public void nullDBInfoData(){
         dbInfoData=null;
+    }
+    public void runInfoSetterStatement(String statement){
+        try {
+            stFacDB.executeUpdate(statement);
+            conn.commit();
+        } catch (SQLException se) {
+            System.out.println("SQL error for runInfoSetterStatement catch:"+se);
+        }
     }
 }
