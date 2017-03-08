@@ -24,7 +24,7 @@ import javax.swing.*;
  */
 public class MiddlePanel extends JPanel{
     private static CardLayout midContent=new CardLayout();
-    public static FacultySelector facSelect;
+    public FacultySelector facSelect;
     public static FacultyInfo facInfo;
     public static MapLook mapL;
     public static LogIn adminCon;
