@@ -362,7 +362,17 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
     }
     public DefaultTableModel getDBTableModel(){
         // set query and pass it to AppDB
-        MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType],colIden.size());
+        switch (dbTblType) {
+            case 0:
+                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType]+" ORDER BY APP.BASICDETAIL.FIRSTNAME ASC",dbTblName[dbTblType],colIden.size());//+" ORDER BY APP.BASICDETAIL.FIRSTNAME ASC"
+                break;
+            case 1:
+                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType]+" ORDER BY APP.LOCATION.BLDG ASC",dbTblName[dbTblType],colIden.size());//+" ORDER BY APP.LOCATION.BLDG ASC"
+                break;
+            case 2:
+                MainFrame.db.runInfoGetterQuery(dbTblName[dbTblType]+" ORDER BY APP.COURSES.INSTRUCTFIRSTNAME ASC",dbTblName[dbTblType],colIden.size());//+" ORDER BY APP.COURSES.INSTRUCTFIRSTNAME ASC"
+                break;
+        }
         // get table data from AppDB
         data= MainFrame.db.getDBInfoData();
         // null dbInfoData
