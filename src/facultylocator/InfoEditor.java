@@ -20,6 +20,7 @@ import java.awt.BorderLayout;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.PAGE_END;
 import java.awt.event.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -193,10 +194,14 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Will execute this query..."+st+"... and refresh current pane");
                     // Send and execute statment
+                    MainFrame.db.runInfoSetterStatement(st);
+                    MainFrame.middleContent.facSelect.updateCB();
+                    count=0;
                     // Update table
                     updateTable();
                 }else{
                     System.out.println("Just refresh current pane");
+                    count=0;
                     // Update table
                     updateTable();
                 }
@@ -247,10 +252,14 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                     if (result == JOptionPane.YES_OPTION){
                         System.out.println("Will execute this query..."+st+"... and refresh current pane");
                         // Send and execute statment
+                        MainFrame.db.runInfoSetterStatement(st);
+                        MainFrame.middleContent.facSelect.updateCB();
+                        count=0;
                         // Update table
                         updateTable();
                     }else{
                         System.out.println("Just refresh current pane");
+                        count=0;
                         // Update table
                         updateTable();
                     }
@@ -284,10 +293,19 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
                         if (result == JOptionPane.YES_OPTION){
                             System.out.println("Will execute this query..."+st+"... and refresh current pane");
                             // Send and execute statment
+                            MainFrame.db.runInfoSetterStatement(st);
+                            MainFrame.middleContent.facSelect.updateCB();
+//                            MainFrame.middleContent.facSelect.revalidate();
+//                            MainFrame.middleContent.facSelect.repaint();
+                            // reset count
+                            count=0;
                             // Update table
                             updateTable();
+                            
                         }else{
                             System.out.println("Just refresh current pane");
+                            // reset count
+                            count=0;
                             // Update table
                             updateTable();
                         }
@@ -373,5 +391,10 @@ public class InfoEditor extends JPanel implements ActionListener,TableModelListe
         }else{
             infoTable.setModel(model);
         }
+    }
+    public Time toSQLTime(String time){
+        String[] hhMMSS=time.split(":");
+        Time sqlTime=new Time(Integer.parseInt(hhMMSS[0]),Integer.parseInt(hhMMSS[1]),Integer.parseInt(hhMMSS[2]));
+        return sqlTime;
     }
 }
