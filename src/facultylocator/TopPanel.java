@@ -35,6 +35,23 @@ public class TopPanel extends JPanel implements ActionListener{
         String dateTime,amPm,hourS,hour24s,minS;    
         JLabel currentTime;
         JPanel mainPageButtonPanel=new JPanel();// Reuse for back button
+        public TopPanel(){
+            setLayout(new GridLayout(1,2));
+            pad=5;
+            mainPageButtonPanel.setLayout(new BorderLayout());// Explicit declaration of panel layout; Not defaulting to Border layout
+            currentTime=new JLabel("Current Time : -:- -");//,SwingConstants.RIGHT
+            currentTime.setHorizontalAlignment(JLabel.RIGHT);// Aligns label to the right
+            currentTime.setBorder(BorderFactory.createEmptyBorder(pad,pad,pad,pad));// creates padding by using empty border
+//            currentTime.setVerticalAlignment(JLabel.CENTER);
+            Dimension d=currentTime.getPreferredSize();
+            d.height=25;
+            currentTime.setPreferredSize(d);
+            add(mainPageButtonPanel);
+            add(currentTime);
+            this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            Timer refreshTimer=new Timer(timerTimeInMilliSeconds,this);// Refresh time value every 500ms
+            refreshTimer.start();// start auto timed events
+        }
         @Override
         public void actionPerformed(ActionEvent e) {
             time.setTimeInMillis(System.currentTimeMillis());// Required to set delay in milliseconds
@@ -65,22 +82,5 @@ public class TopPanel extends JPanel implements ActionListener{
                 hour24=hour+12;
             }
             hour24s=Integer.toString(hour24);
-        }
-        public TopPanel(){
-            setLayout(new GridLayout(1,2));
-            pad=5;
-            mainPageButtonPanel.setLayout(new BorderLayout());// Explicit declaration of panel layout; Not defaulting to Border layout
-            currentTime=new JLabel("Current Time : -:- -");//,SwingConstants.RIGHT
-            currentTime.setHorizontalAlignment(JLabel.RIGHT);// Aligns label to the right
-            currentTime.setBorder(BorderFactory.createEmptyBorder(pad,pad,pad,pad));// creates padding by using empty border
-//            currentTime.setVerticalAlignment(JLabel.CENTER);
-            Dimension d=currentTime.getPreferredSize();
-            d.height=25;
-            currentTime.setPreferredSize(d);
-            add(mainPageButtonPanel);
-            add(currentTime);
-            this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-            Timer refreshTimer=new Timer(timerTimeInMilliSeconds,this);// Refresh time value every 500ms
-            refreshTimer.start();// start auto timed events
         }
 }

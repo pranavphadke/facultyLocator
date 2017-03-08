@@ -42,13 +42,14 @@ public class AppDB {
     static List<String> facNameList;
     List<String> facDet,facLoc;
     static String[] locDet={"","","",""};
+    Object [][] dbInfoData;
 //    public String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     String frName=null,lsName=null,ofNum=null,mail=null,facultyDB="facultyDB",tableName,printStatement,delStatement,dayOfWeek,curStatus,futStatus,noWrkHr,availInOffice,notWrkDay,offCoordString=null,key;
-    int ofExt=9999,tableCheckFlag=0,countFacCourse=0;
-    Statement qrFacDB=null;
+    int ofExt=9999,tableCheckFlag=0,countFacCourse=0,countInfoEntry=0;
+    Statement qrFacDB=null,stFacDB=null;
     PreparedStatement insFacDB=null,updFacDB=null,setSchema=null;
     Connection conn=null;
-    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null;
+    ResultSet rsFacDB=null,countFacLoc=null,offCoord=null,apiKey=null,adminAuth=null,countInfo=null,runInfoQuery=null;
     Properties p;
     //Time sT1,eT1,sT2,eT2,timeDiff;
     Calendar sT1,eT1,sT2,eT2;
@@ -76,6 +77,7 @@ public class AppDB {
             conn.setAutoCommit(false);
             //Create query statement to the DB to check against tables 
             qrFacDB=conn.createStatement();
+            stFacDB=conn.createStatement();
             conn.commit();
             apiKey=qrFacDB.executeQuery("SELECT APIKEY FROM APP.GMAPS");
             apiKey.next();
@@ -389,6 +391,92 @@ public class AppDB {
             dayOfWeek="F";
         }else{
             dayOfWeek="NA";
+        }
+    }
+    public boolean authenticate(String username, String password) {
+        boolean adminAuthOk=false;
+        try{
+            // check username and password against DB
+            // create query statement
+            adminAuth=qrFacDB.executeQuery(String.format("SELECT PIN FROM APP.ADMINS WHERE upper(ADMINS.ID)='%s'",username.toUpperCase()));
+            // check if result set has exactly one entry
+            if(adminAuth.next()){
+                // if yes then
+                // if password provided match the result set then
+                if (password.equals(adminAuth.getString("PIN"))) {
+                    adminAuthOk=true;
+                } else adminAuthOk=false;// else return false
+            }else adminAuthOk=false;// else return false
+        }catch(SQLException se){
+            System.out.println("SQL error for authenticate catch:"+se);
+        }
+        return adminAuthOk;
+    }
+    public void runInfoGetterQuery(String query,String cQuery,int cols){
+        try{
+            int row=0,cF=0;
+            // find how much info will be returned (rows for dbInfoData)
+            countInfo=qrFacDB.executeQuery("SELECT COUNT(*) FROM APP."+cQuery);
+            if(countInfo.next()){
+            countInfoEntry=countInfo.getInt(1);
+            }
+            // create new string [][] with specific dims
+            if(countInfoEntry>0){
+                dbInfoData=new Object [countInfoEntry+1][cols];
+            }else{
+                dbInfoData=new Object [1][cols];
+            }
+            // run main query
+            runInfoQuery=qrFacDB.executeQuery("SELECT * FROM APP."+query);
+            // save result set in string [][]
+            while(runInfoQuery.next()){
+//                row++;
+                if(cQuery.equals("BASICDETAIL")){
+                    dbInfoData[row][0]=runInfoQuery.getString("FIRSTNAME");
+                    dbInfoData[row][1]=runInfoQuery.getString("LASTNAME");
+                    dbInfoData[row][2]=runInfoQuery.getString("OFFNUM");
+                    dbInfoData[row][3]=runInfoQuery.getString("OFFEXT");
+                    dbInfoData[row][4]=runInfoQuery.getString("EMAIL");
+                }else if(cQuery.equals("LOCATION")){
+                    dbInfoData[row][0]=runInfoQuery.getString("BLDG");
+                    dbInfoData[row][1]=runInfoQuery.getString("LAT");
+                    dbInfoData[row][2]=runInfoQuery.getString("LON");
+                    dbInfoData[row][3]=runInfoQuery.getString("BLDGNAME");
+                 }else if(cQuery.equals("COURSES")){
+                    dbInfoData[row][0]=runInfoQuery.getString("COURSE");
+                    dbInfoData[row][1]=runInfoQuery.getString("INSTRUCTFIRSTNAME");
+                    dbInfoData[row][2]=runInfoQuery.getString("INSTRUCTLASTNAME");
+                    dbInfoData[row][3]=runInfoQuery.getString("DAYS");
+                    dbInfoData[row][4]=runInfoQuery.getString("STARTTIME");
+                    dbInfoData[row][5]=runInfoQuery.getString("ENDTIME");
+                    dbInfoData[row][6]=runInfoQuery.getString("ROOM");
+                    dbInfoData[row][7]=runInfoQuery.getString("BLDG");
+                }else{
+                     System.out.println("Not yet implemented!");
+                }
+                row++;
+                if(row==countInfoEntry){
+                    for(cF=0;cF<cols;cF++){                  
+                        dbInfoData[row][cF]="";
+                    }                    
+                }
+            }
+        }catch(SQLException se){
+            System.out.println("SQL error for runInfoGetterQuery catch:"+se);
+        }
+    }
+    public Object [][] getDBInfoData(){
+        return dbInfoData;
+    }
+    public void nullDBInfoData(){
+        dbInfoData=null;
+    }
+    public void runInfoSetterStatement(String statement){
+        try {
+            stFacDB.executeUpdate(statement);
+            conn.commit();
+        } catch (SQLException se) {
+            System.out.println("SQL error for runInfoSetterStatement catch:"+se);
         }
     }
 }

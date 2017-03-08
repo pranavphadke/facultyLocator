@@ -35,8 +35,9 @@ import javax.swing.*;
  */
 public class FacultySelector extends JPanel implements ActionListener,MouseListener{
     BoxLayout selectorLay=new BoxLayout(this,BoxLayout.Y_AXIS);
-    static List<String> facultyList;//={"--Pick One--","Faculty Selector","Faculty Info","Map View"};// Change this to ArrayList
-    JComboBox facultySelectorBox;
+    List<String> facultyList;//={"--Pick One--","Faculty Selector","Faculty Info","Map View"};// Change this to ArrayList
+    JComboBox facultySelectorBox=null;
+    DefaultComboBoxModel model=null;
     public static String facultyName;
     private static CardLayout clUsageFacSel;
 //    private static int i;
@@ -70,12 +71,15 @@ public class FacultySelector extends JPanel implements ActionListener,MouseListe
         setLayout(selectorLay);
         setBorder(BorderFactory.createTitledBorder("Faculty Selector"));
         dlcr.setHorizontalAlignment(DefaultListCellRenderer.CENTER); 
-        // Update facultyList from DB
-        facultyList=MainFrame.db.getFacultyList();
-        // Convert List to Array for Combo Box labels
-        String[] facList=new String[facultyList.size()];
-        facList=facultyList.toArray(facList);
-        facultySelectorBox=new JComboBox(facList);
+        // Update Combo Box
+        updateCB();
+//// Update facultyList from DB
+////        facultyList=MainFrame.db.getFacultyList();
+//        setFacultyList(MainFrame.db.getFacultyList());
+//        // Convert List to Array for Combo Box labels
+//        String[] facList=new String[facultyList.size()];
+//        facList=facultyList.toArray(facList);
+//        facultySelectorBox=new JComboBox(facList);
         facultySelectorBox.setMaximumSize(new Dimension(300,20));
         facultySelectorBox.setRenderer(dlcr);
         facultySelectorBox.setToolTipText("Select faculty to track from the list");
@@ -88,7 +92,28 @@ public class FacultySelector extends JPanel implements ActionListener,MouseListe
         add(Box.createRigidArea(new Dimension(0,5)));
         add(mapLook);
     }
-
+    public void setFacultyList(List<String> updFacList){
+        facultyList=updFacList;
+    }
+    public DefaultComboBoxModel getFSCBModel(){
+        // get updated facultyList from DB
+        setFacultyList(MainFrame.db.getFacultyList());
+        // Convert List to Array for Combo Box labels
+        String[] facList=new String[facultyList.size()];
+        facList=facultyList.toArray(facList);
+      
+        DefaultComboBoxModel cbModel=new DefaultComboBoxModel(facList);
+//        tblModel.addTableModelListener(this);
+        return cbModel;
+    }
+    public void updateCB(){
+        model=getFSCBModel();
+        if (facultySelectorBox==null){
+            facultySelectorBox=new JComboBox(model);
+        }else{
+            facultySelectorBox.setModel(model);
+        }
+    }    
     @Override
     public void mouseClicked(MouseEvent me) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
